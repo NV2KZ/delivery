@@ -5,6 +5,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class LocationTest {
     @Test
@@ -119,11 +120,9 @@ public class LocationTest {
         // Arrange
         var location = Location.mustCreate(1, 1);
 
-        // Act
-        var result = location.distanceTo(null);
-
         // Assert
-        assertThat(result.isSuccess()).isFalse();
-        assertThat(result.getError()).isNotNull();
+        assertThatThrownBy(() -> location.distanceTo(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessageContaining("target");
     }
 }

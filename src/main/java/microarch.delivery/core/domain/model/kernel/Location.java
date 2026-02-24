@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 @Embeddable
 @Getter
@@ -37,7 +38,7 @@ public final class Location extends ValueObject<Location> {
     }
 
     public Result<Integer, Error> distanceTo(Location target) {
-        if (target == null) return Result.failure(GeneralErrors.valueIsRequired("target"));
+        Objects.requireNonNull(target, "target");
 
         int distance = Math.abs(this.x - target.x) + Math.abs(this.y - target.y);
 
