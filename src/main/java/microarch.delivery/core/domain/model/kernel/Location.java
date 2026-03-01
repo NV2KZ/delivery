@@ -20,10 +20,10 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Location extends ValueObject<Location> {
 
-    @Column(name = "x")
+    @Column(name = "x_coordinate")
     private final int x;
 
-    @Column(name = "y")
+    @Column(name = "y_coordinate")
     private final int y;
 
     public static Result<Location, Error> create(int x, int y) {

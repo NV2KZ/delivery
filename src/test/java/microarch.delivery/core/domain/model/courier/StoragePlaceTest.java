@@ -1,5 +1,6 @@
 package microarch.delivery.core.domain.model.courier;
 
+import microarch.delivery.core.domain.model.kernel.Volume;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -17,13 +18,14 @@ class StoragePlaceTest {
     @Test
     void shouldCreateStoragePlaceWithValidParameters() {
         // Act
-        var result = StoragePlace.create("Main Backpack", 100);
+        var volume = Volume.mustCreate(100);
+        var result = StoragePlace.create("Main Backpack", volume);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
         var storagePlace = result.getValue();
         assertThat(storagePlace.getName()).isEqualTo("Main Backpack");
-        assertThat(storagePlace.getTotalVolume()).isEqualTo(100);
+        assertThat(storagePlace.getTotalVolume()).isEqualTo(volume);
         assertThat(storagePlace.isEmpty()).isTrue();
         assertThat(storagePlace.getOrderId()).isNull();
         assertThat(storagePlace.getId()).isNotNull();
@@ -34,31 +36,29 @@ class StoragePlaceTest {
     @ValueSource(strings = {" ", "\t", "\n"})
     void shouldReturnErrorWhenNameIsInvalid(String invalidName) {
         // Act
-        var result = StoragePlace.create(invalidName, 100);
+        var volume = Volume.mustCreate(100);
+        var result = StoragePlace.create(invalidName, volume);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError()).isNotNull();
     }
 
-    @ParameterizedTest
-    @ValueSource(ints = {0, -1})
-    void shouldReturnErrorWhenTotalVolumeIsLessThanOne(int invalidVolume) {
+    @Test
+    void shouldReturnErrorWhenTotalVolumeNull() {
         // Act
-        var result = StoragePlace.create("Backpack", invalidVolume);
+        var result = StoragePlace.create("Backpack", null);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError()).isNotNull();
     }
 
-    // Тесты canPlaceOrder
     @Test
     void shouldAllowPlacingOrderWhenStorageIsEmptyAndHasEnoughCapacity() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
-        int orderVolume = 80;
-
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
+        var orderVolume = Volume.mustCreate(80);
         // Act
         boolean canPlace = storagePlace.canPlaceOrder(orderVolume);
 
@@ -69,12 +69,12 @@ class StoragePlaceTest {
     @Test
     void shouldNotAllowPlacingOrderWhenStorageIsNotEmpty() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
         var orderId = UUID.randomUUID();
-        storagePlace.placeOrder(orderId, 50);
+        storagePlace.placeOrder(orderId, Volume.mustCreate(50));
 
         // Act
-        boolean canPlace = storagePlace.canPlaceOrder(30);
+        boolean canPlace = storagePlace.canPlaceOrder(Volume.mustCreate(30));
 
         // Assert
         assertThat(canPlace).isFalse();
@@ -83,10 +83,10 @@ class StoragePlaceTest {
     @Test
     void shouldNotAllowPlacingOrderWhenOrderVolumeExceedsCapacity() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
 
         // Act
-        boolean canPlace = storagePlace.canPlaceOrder(150);
+        boolean canPlace = storagePlace.canPlaceOrder(Volume.mustCreate(150));
 
         // Assert
         assertThat(canPlace).isFalse();
@@ -102,10 +102,10 @@ class StoragePlaceTest {
     })
     void shouldCheckCanPlaceOrderCorrectly(int totalVolume, int orderVolume, boolean expected) {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", totalVolume);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(totalVolume));
 
         // Act
-        boolean canPlace = storagePlace.canPlaceOrder(orderVolume);
+        boolean canPlace = storagePlace.canPlaceOrder(Volume.mustCreate(orderVolume));
 
         // Assert
         assertThat(canPlace).isEqualTo(expected);
@@ -114,11 +114,11 @@ class StoragePlaceTest {
     @Test
     void shouldPlaceOrderSuccessfully() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
         var orderId = UUID.randomUUID();
 
         // Act
-        var result = storagePlace.placeOrder(orderId, 80);
+        var result = storagePlace.placeOrder(orderId, Volume.mustCreate(80));
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -129,13 +129,13 @@ class StoragePlaceTest {
     @Test
     void shouldNotPlaceOrderWhenStorageIsNotEmpty() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
         var firstOrderId = UUID.randomUUID();
-        storagePlace.placeOrder(firstOrderId, 50);
+        storagePlace.placeOrder(firstOrderId, Volume.mustCreate(50));
         var secondOrderId = UUID.randomUUID();
 
         // Act
-        var result = storagePlace.placeOrder(secondOrderId, 30);
+        var result = storagePlace.placeOrder(secondOrderId, Volume.mustCreate(30));
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -146,11 +146,11 @@ class StoragePlaceTest {
     @Test
     void shouldNotPlaceOrderWhenVolumeExceedsCapacity() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
         var orderId = UUID.randomUUID();
 
         // Act
-        var result = storagePlace.placeOrder(orderId, 150);
+        var result = storagePlace.placeOrder(orderId, Volume.mustCreate(150));
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -162,10 +162,10 @@ class StoragePlaceTest {
     @Test
     void shouldThrowExceptionWhenOrderIdIsNull() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
 
         // Assert
-        assertThatThrownBy(() -> storagePlace.placeOrder(null, 50))
+        assertThatThrownBy(() -> storagePlace.placeOrder(null, Volume.mustCreate(50)))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("orderId");
     }
@@ -173,9 +173,9 @@ class StoragePlaceTest {
     @Test
     void shouldRemoveOrderSuccessfully() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
         var orderId = UUID.randomUUID();
-        storagePlace.placeOrder(orderId, 80);
+        storagePlace.placeOrder(orderId, Volume.mustCreate(80));
 
         // Act
         var result = storagePlace.removeOrder();
@@ -189,7 +189,7 @@ class StoragePlaceTest {
     @Test
     void shouldNotRemoveOrderWhenStorageIsEmpty() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
 
         // Act
         var result = storagePlace.removeOrder();
@@ -203,7 +203,7 @@ class StoragePlaceTest {
     @Test
     void shouldReturnTrueWhenStorageIsEmpty() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
 
         // Assert
         assertThat(storagePlace.isEmpty()).isTrue();
@@ -212,8 +212,8 @@ class StoragePlaceTest {
     @Test
     void shouldReturnFalseWhenStorageHasOrder() {
         // Arrange
-        var storagePlace = StoragePlace.mustCreate("Backpack", 100);
-        storagePlace.placeOrder(UUID.randomUUID(), 50);
+        var storagePlace = StoragePlace.mustCreate("Backpack", Volume.mustCreate(100));
+        storagePlace.placeOrder(UUID.randomUUID(), Volume.mustCreate(50));
 
         // Assert
         assertThat(storagePlace.isEmpty()).isFalse();
