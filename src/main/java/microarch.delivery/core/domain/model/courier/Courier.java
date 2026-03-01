@@ -36,8 +36,8 @@ public class Courier extends Aggregate<UUID> {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "speed")
-    private int speed;
+    @Embedded
+    private Speed speed;
 
     @Embedded
     private Location location;
@@ -50,7 +50,7 @@ public class Courier extends Aggregate<UUID> {
     @JoinColumn(name = "courier_id", nullable = false)
     private final List<StoragePlace> storagePlaces = new ArrayList<>();
 
-    private Courier(String name, int speed, Location location) {
+    private Courier(String name, Speed speed, Location location) {
         super(UUID.randomUUID());
         this.name = name;
         this.speed = speed;
@@ -63,17 +63,16 @@ public class Courier extends Aggregate<UUID> {
         );
     }
 
-    public static Result<Courier, Error> create(String name, int speed, Location location) {
+    public static Result<Courier, Error> create(String name, Speed speed, Location location) {
         if (name == null || name.isBlank()) return Result.failure(GeneralErrors.valueIsRequired("name"));
         if (location == null) return Result.failure(GeneralErrors.valueIsRequired("location"));
-        if (speed < 1)
-            return Result.failure(GeneralErrors.valueMustBeGreaterOrEqual("speed", speed, 1));
+        if (speed == null) return Result.failure(GeneralErrors.valueIsRequired("speed"));
 
         var order = new Courier(name, speed, location);
         return Result.success(order);
     }
 
-    public static Courier mustCreate(String name, int speed, Location location) {
+    public static Courier mustCreate(String name, Speed speed, Location location) {
         return create(name, speed, location).getValueOrThrow();
     }
 
@@ -124,7 +123,7 @@ public class Courier extends Aggregate<UUID> {
         }
 
         int distance = distanceResult.getValue();
-        int ticks = (int) Math.ceil((double) distance / this.speed);
+        int ticks = (int) Math.ceil((double) distance / this.speed.getValue());
 
         return Result.success(ticks);
     }
@@ -134,7 +133,7 @@ public class Courier extends Aggregate<UUID> {
 
         int difX = target.getX() - location.getX();
         int difY = target.getY() - location.getY();
-        int cruisingRange = speed;
+        int cruisingRange = speed.getValue();
 
         int moveX = Math.max(-cruisingRange, Math.min(difX, cruisingRange));
         cruisingRange -= Math.abs(moveX);

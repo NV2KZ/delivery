@@ -17,7 +17,7 @@ class CourierTest {
     void shouldCreateCourierWithValidParameters() {
         // Arrange
         String name = "Иван";
-        int speed = 2;
+        Speed speed = Speed.mustCreate(2);
         Location location = Location.mustCreate(5, 5);
 
         // Act
@@ -47,7 +47,7 @@ class CourierTest {
         Location location = Location.mustCreate(5, 5);
 
         // Act
-        var result = Courier.create(invalidName, 2, location);
+        var result = Courier.create(invalidName, Speed.mustCreate(2), location);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -57,7 +57,7 @@ class CourierTest {
     @Test
     void shouldReturnErrorWhenLocationIsNull() {
         // Act
-        var result = Courier.create("Иван", 2, null);
+        var result = Courier.create("Иван", Speed.mustCreate(2), null);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -65,13 +65,9 @@ class CourierTest {
     }
 
     @Test
-    void shouldReturnErrorWhenSpeedIsLessThanOne() {
-        // Arrange
-        int invalidSpeed = 0;
-        Location location = Location.mustCreate(5, 5);
-
+    void shouldReturnErrorWhenSpeedIsNull() {
         // Act
-        var result = Courier.create("Иван", invalidSpeed, location);
+        var result = Courier.create("Иван", null, Location.mustCreate(5, 5));
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -81,7 +77,7 @@ class CourierTest {
     @Test
     void shouldAddStoragePlaceSuccessfully() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Act
         var result = courier.addStoragePlace("Рюкзак", 20);
@@ -99,7 +95,7 @@ class CourierTest {
     @Test
     void shouldReturnErrorWhenAddingInvalidStoragePlace() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Act
         var result = courier.addStoragePlace("", 20);
@@ -113,7 +109,7 @@ class CourierTest {
     @Test
     void shouldReturnTrueWhenThereIsSuitableStoragePlace() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         courier.addStoragePlace("Рюкзак", 20);
 
         // Assert
@@ -125,7 +121,7 @@ class CourierTest {
     @Test
     void shouldReturnFalseWhenNoSuitableStoragePlace() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Assert
         assertThat(courier.canPlaceOrder(11)).isFalse();
@@ -135,7 +131,7 @@ class CourierTest {
     @Test
     void shouldTakeOrderAndPlaceInExactlyMatchingVolume() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
 
         // Act
@@ -151,7 +147,7 @@ class CourierTest {
     @Test
     void shouldNotTakeOrderWhenNoSuitablePlace() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
 
         // Act
@@ -166,7 +162,7 @@ class CourierTest {
     @Test
     void shouldThrowExceptionWhenTakingOrderWithNullOrderId() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Assert
         assertThatThrownBy(() -> courier.takeOrder(null, 5))
@@ -177,7 +173,7 @@ class CourierTest {
     @Test
     void shouldCompleteOrderAndFreeStoragePlace() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
         courier.takeOrder(orderId, 5);
 
@@ -194,7 +190,7 @@ class CourierTest {
     @Test
     void shouldNotCompleteOrderWhenOrderNotFound() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
         UUID wrongOrderId = UUID.randomUUID();
         courier.takeOrder(orderId, 5);
@@ -211,7 +207,7 @@ class CourierTest {
     @Test
     void shouldThrowExceptionWhenCompletingWithNullOrderId() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Act & Assert
         assertThatThrownBy(() -> courier.completeOrder(null))
@@ -222,7 +218,7 @@ class CourierTest {
     @Test
     void shouldCalculateDeliveryTimeCorrectly() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(1, 1));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
         var target = Location.mustCreate(5, 5);
 
         // Act
@@ -236,7 +232,7 @@ class CourierTest {
     @Test
     void shouldReturnErrorWhenTargetIsNull() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(1, 1));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
 
         // Assert
         assertThatThrownBy(() -> courier.calculateDeliveryTime(null))
@@ -247,7 +243,7 @@ class CourierTest {
     @Test
     void shouldMoveTowardsTargetWithinSpeed() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(1, 1));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
         var target = Location.mustCreate(4, 5);
 
         // Act
@@ -263,7 +259,7 @@ class CourierTest {
     @Test
     void shouldMoveExactlyToTargetWhenWithinRange() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 5, Location.mustCreate(1, 1));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(5), Location.mustCreate(1, 1));
         var target = Location.mustCreate(3, 4);
 
         // Act
@@ -277,7 +273,7 @@ class CourierTest {
     @Test
     void shouldNotMoveWhenTargetIsCurrentLocation() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(5, 5));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         var target = Location.mustCreate(5, 5);
 
         // Act
@@ -291,7 +287,7 @@ class CourierTest {
     @Test
     void shouldThrowExceptionWhenMoveTargetIsNull() {
         // Arrange
-        var courier = Courier.mustCreate("Иван", 2, Location.mustCreate(1, 1));
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
 
         // Assert
         assertThatThrownBy(() -> courier.move(null))
