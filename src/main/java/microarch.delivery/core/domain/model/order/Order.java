@@ -8,14 +8,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import libs.ddd.Aggregate;
 import libs.errs.Error;
-import libs.errs.GeneralErrors;
-import libs.errs.Guard;
 import libs.errs.Result;
 import libs.errs.UnitResult;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -29,8 +28,8 @@ public class Order extends Aggregate<UUID> {
     @Embedded
     private Location location;
 
-    @Column(name = "volume")
-    private int volume;
+    @Embedded
+    private Volume volume;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -39,24 +38,23 @@ public class Order extends Aggregate<UUID> {
     @Column(name = "courier_id")
     private UUID courierId;
 
-    private Order(UUID id, Location location, int volume) {
+    private Order(UUID id, Location location, Volume volume) {
         super(id);
         this.location = location;
         this.volume = volume;
         this.status = OrderStatus.CREATED;
     }
 
-    public static Result<Order, Error> create(UUID basketId, Location location, int volume) {
+    public static Result<Order, Error> create(UUID basketId, Location location, Volume volume) {
         Objects.requireNonNull(basketId, "basketId");
         Objects.requireNonNull(location, "location");
-        if (volume < 1)
-            return Result.failure(GeneralErrors.valueMustBeGreaterOrEqual("volume", volume, 1));
+        Objects.requireNonNull(location, "volume");
 
         var order = new Order(basketId, location, volume);
         return Result.success(order);
     }
 
-    public static Order mustCreate(UUID basketId, Location location, int volume) {
+    public static Order mustCreate(UUID basketId, Location location, Volume volume) {
         return create(basketId, location, volume).getValueOrThrow();
     }
 

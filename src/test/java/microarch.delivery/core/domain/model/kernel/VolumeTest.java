@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.courier;
+package microarch.delivery.core.domain.model.kernel;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -8,24 +8,25 @@ import org.junit.jupiter.params.provider.ValueSource;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class SpeedTest {
+class VolumeTest {
 
+    // Тесты создания
     @Test
-    void shouldCreateSpeedWithValidValue() {
+    void shouldCreateVolumeWithValidValue() {
         // Act
-        var result = Speed.create(5);
+        var result = Volume.create(5);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
-        var speed = result.getValue();
-        assertThat(speed.getValue()).isEqualTo(5);
+        var volume = result.getValue();
+        assertThat(volume.getValue()).isEqualTo(5);
     }
 
     @ParameterizedTest
     @ValueSource(ints = {1, 100, Integer.MAX_VALUE})
-    void shouldCreateSpeedWithAnyPositiveValue(int validValue) {
+    void shouldCreateVolumeWithAnyPositiveValue(int validValue) {
         // Act
-        var result = Speed.create(validValue);
+        var result = Volume.create(validValue);
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -35,35 +36,37 @@ class SpeedTest {
     @Test
     void shouldReturnErrorWhenValueIsLessThanMin() {
         // Act
-        var result = Speed.create(0);
+        var result = Volume.create(0);
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError()).isNotNull();
     }
 
+    // Тесты равенства
     @Test
     void shouldBeEqualWhenValuesAreSame() {
         // Arrange
-        var speed1 = Speed.mustCreate(5);
-        var speed2 = Speed.mustCreate(5);
+        var volume1 = Volume.mustCreate(5);
+        var volume2 = Volume.mustCreate(5);
 
         // Assert
-        assertThat(speed1).isEqualTo(speed2);
-        assertThat(speed1.hashCode()).isEqualTo(speed2.hashCode());
+        assertThat(volume1).isEqualTo(volume2);
+        assertThat(volume1.hashCode()).isEqualTo(volume2.hashCode());
     }
 
     @Test
     void shouldNotBeEqualWhenValuesAreDifferent() {
         // Arrange
-        var speed1 = Speed.mustCreate(5);
-        var speed2 = Speed.mustCreate(7);
+        var volume1 = Volume.mustCreate(5);
+        var volume2 = Volume.mustCreate(7);
 
         // Assert
-        assertThat(speed1).isNotEqualTo(speed2);
-        assertThat(speed1.hashCode()).isNotEqualTo(speed2.hashCode());
+        assertThat(volume1).isNotEqualTo(volume2);
+        assertThat(volume1.hashCode()).isNotEqualTo(volume2.hashCode());
     }
 
+    // Тесты сравнения isLessThan
     @ParameterizedTest
     @CsvSource({
             "3, 5, true",   // 3 меньше 5
@@ -74,16 +77,17 @@ class SpeedTest {
     })
     void shouldCorrectlyCheckIsLessThan(int value1, int value2, boolean expected) {
         // Arrange
-        var speed1 = Speed.mustCreate(value1);
-        var speed2 = Speed.mustCreate(value2);
+        var volume1 = Volume.mustCreate(value1);
+        var volume2 = Volume.mustCreate(value2);
 
         // Act
-        boolean result = speed1.isLessThan(speed2);
+        boolean result = volume1.isLessThan(volume2);
 
         // Assert
         assertThat(result).isEqualTo(expected);
     }
 
+    // Тесты сравнения isGreaterThan
     @ParameterizedTest
     @CsvSource({
             "5, 3, true",   // 5 больше 3
@@ -94,16 +98,17 @@ class SpeedTest {
     })
     void shouldCorrectlyCheckIsGreaterThan(int value1, int value2, boolean expected) {
         // Arrange
-        var speed1 = Speed.mustCreate(value1);
-        var speed2 = Speed.mustCreate(value2);
+        var volume1 = Volume.mustCreate(value1);
+        var volume2 = Volume.mustCreate(value2);
 
         // Act
-        boolean result = speed1.isGreaterThan(speed2);
+        boolean result = volume1.isGreaterThan(volume2);
 
         // Assert
         assertThat(result).isEqualTo(expected);
     }
 
+    // Тесты сравнения isLessOrEqual
     @ParameterizedTest
     @CsvSource({
             "3, 5, true",   // 3 <= 5
@@ -114,16 +119,17 @@ class SpeedTest {
     })
     void shouldCorrectlyCheckIsLessOrEqual(int value1, int value2, boolean expected) {
         // Arrange
-        var speed1 = Speed.mustCreate(value1);
-        var speed2 = Speed.mustCreate(value2);
+        var volume1 = Volume.mustCreate(value1);
+        var volume2 = Volume.mustCreate(value2);
 
         // Act
-        boolean result = speed1.isLessOrEqual(speed2);
+        boolean result = volume1.isLessOrEqual(volume2);
 
         // Assert
         assertThat(result).isEqualTo(expected);
     }
 
+    // Тесты сравнения isGreaterOrEqual
     @ParameterizedTest
     @CsvSource({
             "5, 3, true",   // 5 >= 3
@@ -134,37 +140,20 @@ class SpeedTest {
     })
     void shouldCorrectlyCheckIsGreaterOrEqual(int value1, int value2, boolean expected) {
         // Arrange
-        var speed1 = Speed.mustCreate(value1);
-        var speed2 = Speed.mustCreate(value2);
+        var volume1 = Volume.mustCreate(value1);
+        var volume2 = Volume.mustCreate(value2);
 
         // Act
-        boolean result = speed1.isGreaterOrEqual(speed2);
+        boolean result = volume1.isGreaterOrEqual(volume2);
 
         // Assert
         assertThat(result).isEqualTo(expected);
     }
 
     @Test
-    void shouldHandleMinValueCorrectly() {
-        // Arrange
-        var minSpeed = Speed.mustCreate(1);
-        var normalSpeed = Speed.mustCreate(5);
-        var alsoMinSpeed = Speed.mustCreate(1);
-
-        // Assert
-        assertThat(minSpeed.getValue()).isEqualTo(1);
-        assertThat(minSpeed.isLessThan(normalSpeed)).isTrue();
-        assertThat(minSpeed.isGreaterThan(normalSpeed)).isFalse();
-        assertThat(minSpeed.isLessOrEqual(normalSpeed)).isTrue();
-        assertThat(minSpeed.isGreaterOrEqual(normalSpeed)).isFalse();
-        assertThat(minSpeed.isLessOrEqual(alsoMinSpeed)).isTrue();
-        assertThat(minSpeed.isGreaterOrEqual(alsoMinSpeed)).isTrue();
-    }
-
-    @Test
     void shouldThrowExceptionWhenComparingWithNull() {
         // Arrange
-        var volume = Speed.mustCreate(5);
+        var volume = Volume.mustCreate(5);
 
         // Act & Assert
         assertThatThrownBy(() -> volume.isLessThan(null))
@@ -178,5 +167,28 @@ class SpeedTest {
 
         assertThatThrownBy(() -> volume.isGreaterOrEqual(null))
                 .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void shouldHandleMinValueCorrectly() {
+        // Arrange
+        var minVolume = Volume.mustCreate(1);
+        var normalVolume = Volume.mustCreate(5);
+        var alsoMinVolume = Volume.mustCreate(1);
+
+        // Assert
+        assertThat(minVolume.getValue()).isEqualTo(1);
+
+        // Сравнения с большим значением
+        assertThat(minVolume.isLessThan(normalVolume)).isTrue();
+        assertThat(minVolume.isGreaterThan(normalVolume)).isFalse();
+        assertThat(minVolume.isLessOrEqual(normalVolume)).isTrue();
+        assertThat(minVolume.isGreaterOrEqual(normalVolume)).isFalse();
+
+        // Сравнения с таким же минимальным
+        assertThat(minVolume.isLessThan(alsoMinVolume)).isFalse();
+        assertThat(minVolume.isGreaterThan(alsoMinVolume)).isFalse();
+        assertThat(minVolume.isLessOrEqual(alsoMinVolume)).isTrue();
+        assertThat(minVolume.isGreaterOrEqual(alsoMinVolume)).isTrue();
     }
 }

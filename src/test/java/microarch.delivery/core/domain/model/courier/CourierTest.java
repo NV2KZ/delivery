@@ -1,6 +1,7 @@
 package microarch.delivery.core.domain.model.courier;
 
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Volume;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -35,7 +36,7 @@ class CourierTest {
         assertThat(courier.getStoragePlaces()).hasSize(1);
         var defaultBag = courier.getStoragePlaces().get(0);
         assertThat(defaultBag.getName()).isEqualTo("Сумка");
-        assertThat(defaultBag.getTotalVolume()).isEqualTo(10);
+        assertThat(defaultBag.getTotalVolume().getValue()).isEqualTo(10);
         assertThat(defaultBag.isEmpty()).isTrue();
     }
 
@@ -80,7 +81,7 @@ class CourierTest {
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Act
-        var result = courier.addStoragePlace("Рюкзак", 20);
+        var result = courier.addStoragePlace("Рюкзак", Volume.mustCreate(20));
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -88,7 +89,7 @@ class CourierTest {
 
         var newPlace = courier.getStoragePlaces().get(1);
         assertThat(newPlace.getName()).isEqualTo("Рюкзак");
-        assertThat(newPlace.getTotalVolume()).isEqualTo(20);
+        assertThat(newPlace.getTotalVolume().getValue()).isEqualTo(20);
         assertThat(newPlace.isEmpty()).isTrue();
     }
 
@@ -98,7 +99,7 @@ class CourierTest {
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Act
-        var result = courier.addStoragePlace("", 20);
+        var result = courier.addStoragePlace("", Volume.mustCreate(20));
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -110,12 +111,12 @@ class CourierTest {
     void shouldReturnTrueWhenThereIsSuitableStoragePlace() {
         // Arrange
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
-        courier.addStoragePlace("Рюкзак", 20);
+        courier.addStoragePlace("Рюкзак", Volume.mustCreate(20));
 
         // Assert
-        assertThat(courier.canPlaceOrder(5)).isTrue();  // в сумку
-        assertThat(courier.canPlaceOrder(10)).isTrue(); // ровно под сумку
-        assertThat(courier.canPlaceOrder(15)).isTrue(); // в рюкзак
+        assertThat(courier.canPlaceOrder(Volume.mustCreate(5))).isTrue();  // в сумку
+        assertThat(courier.canPlaceOrder(Volume.mustCreate(10))).isTrue(); // ровно под сумку
+        assertThat(courier.canPlaceOrder(Volume.mustCreate(15))).isTrue(); // в рюкзак
     }
 
     @Test
@@ -124,8 +125,8 @@ class CourierTest {
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Assert
-        assertThat(courier.canPlaceOrder(11)).isFalse();
-        assertThat(courier.canPlaceOrder(20)).isFalse();
+        assertThat(courier.canPlaceOrder(Volume.mustCreate(11))).isFalse();
+        assertThat(courier.canPlaceOrder(Volume.mustCreate(20))).isFalse();
     }
 
     @Test
@@ -135,7 +136,7 @@ class CourierTest {
         UUID orderId = UUID.randomUUID();
 
         // Act
-        var result = courier.takeOrder(orderId, 10); // ровно под сумку
+        var result = courier.takeOrder(orderId, Volume.mustCreate(10)); // ровно под сумку
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -151,7 +152,7 @@ class CourierTest {
         UUID orderId = UUID.randomUUID();
 
         // Act
-        var result = courier.takeOrder(orderId, 11); // больше чем 10
+        var result = courier.takeOrder(orderId, Volume.mustCreate(11)); // больше чем 10
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -165,7 +166,7 @@ class CourierTest {
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
 
         // Assert
-        assertThatThrownBy(() -> courier.takeOrder(null, 5))
+        assertThatThrownBy(() -> courier.takeOrder(null, Volume.mustCreate(5)))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("orderId");
     }
@@ -175,7 +176,7 @@ class CourierTest {
         // Arrange
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
-        courier.takeOrder(orderId, 5);
+        courier.takeOrder(orderId, Volume.mustCreate(5));
 
         // Act
         var result = courier.completeOrder(orderId);
@@ -193,7 +194,7 @@ class CourierTest {
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
         UUID orderId = UUID.randomUUID();
         UUID wrongOrderId = UUID.randomUUID();
-        courier.takeOrder(orderId, 5);
+        courier.takeOrder(orderId, Volume.mustCreate(5));
 
         // Act
         var result = courier.completeOrder(wrongOrderId);

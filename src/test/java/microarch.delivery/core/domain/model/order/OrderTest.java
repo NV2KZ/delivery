@@ -1,6 +1,7 @@
 package microarch.delivery.core.domain.model.order;
 
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Volume;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -15,7 +16,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        int volume = 10;
+        var volume = Volume.mustCreate(10);
 
         // Act
         var result = Order.create(basketId, location, volume);
@@ -36,7 +37,7 @@ class OrderTest {
         Location location = Location.mustCreate(5, 5);
 
         // Assert
-        assertThatThrownBy(() -> Order.create(null, location, 10))
+        assertThatThrownBy(() -> Order.create(null, location, Volume.mustCreate(10)))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("basketId");
     }
@@ -47,24 +48,9 @@ class OrderTest {
         UUID basketId = UUID.randomUUID();
 
         // Assert
-        assertThatThrownBy(() -> Order.create(basketId, null, 10))
+        assertThatThrownBy(() -> Order.create(basketId, null, Volume.mustCreate(10)))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessageContaining("location");
-    }
-
-    @Test
-    void shouldReturnErrorWhenVolumeIsLessThanOne() {
-        // Arrange
-        UUID basketId = UUID.randomUUID();
-        Location location = Location.mustCreate(5, 5);
-        int invalidVolume = 0;
-
-        // Act
-        var result = Order.create(basketId, location, invalidVolume);
-
-        // Assert
-        assertThat(result.isSuccess()).isFalse();
-        assertThat(result.getError()).isNotNull();
     }
 
     @Test
@@ -72,7 +58,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
         UUID courierId = UUID.randomUUID();
 
         // Act
@@ -89,7 +75,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
 
         // Act & Assert
         assertThatThrownBy(() -> order.assign(null))
@@ -102,7 +88,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
         UUID firstCourierId = UUID.randomUUID();
         UUID secondCourierId = UUID.randomUUID();
 
@@ -121,7 +107,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
         UUID courierId = UUID.randomUUID();
         order.assign(courierId);
 
@@ -139,7 +125,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
 
         // Act
         var result = order.complete();
@@ -156,7 +142,7 @@ class OrderTest {
         // Arrange
         UUID basketId = UUID.randomUUID();
         Location location = Location.mustCreate(5, 5);
-        var order = Order.mustCreate(basketId, location, 10);
+        var order = Order.mustCreate(basketId, location, Volume.mustCreate(10));
         UUID courierId = UUID.randomUUID();
         order.assign(courierId);
         order.complete();

@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,7 +32,7 @@ import java.util.UUID;
 public class Courier extends Aggregate<UUID> {
 
     private static final String DEFAULT_STORAGE_PLACE_NAME = "Сумка";
-    private static final int DEFAULT_STORAGE_PLACE_VOLUME = 10;
+    private static final Volume DEFAULT_STORAGE_PLACE_VOLUME = Volume.mustCreate(10);
 
     @Column(name = "name")
     private String name;
@@ -76,7 +77,7 @@ public class Courier extends Aggregate<UUID> {
         return create(name, speed, location).getValueOrThrow();
     }
 
-    public UnitResult<Error> addStoragePlace(String name, int volume) {
+    public UnitResult<Error> addStoragePlace(String name, Volume volume) {
         var storagePlaceResult = StoragePlace.create(name, volume);
         if (storagePlaceResult.isFailure()) {
             return UnitResult.failure(storagePlaceResult.getError());
@@ -85,17 +86,17 @@ public class Courier extends Aggregate<UUID> {
         return UnitResult.success();
     }
 
-    public boolean canPlaceOrder(int orderVolume) {
+    public boolean canPlaceOrder(Volume orderVolume) {
         return storagePlaces.stream()
                 .anyMatch(storagePlace -> storagePlace.canPlaceOrder(orderVolume));
     }
 
-    public UnitResult<Error> takeOrder(UUID orderId, int orderVolume) {
+    public UnitResult<Error> takeOrder(UUID orderId, Volume orderVolume) {
         Objects.requireNonNull(orderId, "orderId");
 
         return storagePlaces.stream()
                 .filter(storagePlace -> storagePlace.canPlaceOrder(orderVolume))
-                .min(Comparator.comparingInt(StoragePlace::getTotalVolume))
+                .min(Comparator.comparing(StoragePlace::getTotalVolume))
                 .map(storagePlace -> storagePlace.placeOrder(orderId, orderVolume))
                 .orElse(UnitResult.failure(Errors.canNotTakeOrder(orderVolume)));
     }
@@ -159,9 +160,14 @@ public class Courier extends Aggregate<UUID> {
                     String.format("Заказ %s не найден ни в одном месте хранения", orderId));
         }
 
-        public static Error canNotTakeOrder(int orderVolume) {
-            return Error.of("courier.cannot.take.order",
-                    String.format("Невозможно принять заказ объемом %d - нет подходящего места для хранения.", orderVolume));
+        public static Error canNotTakeOrder(Volume orderVolume) {
+            return Error.of(
+                    "courier.cannot.take.order",
+                    String.format(
+                            "Невозможно принять заказ объемом %d - нет подходящего места для хранения.",
+                            orderVolume.getValue()
+                    )
+            );
         }
     }
 }
