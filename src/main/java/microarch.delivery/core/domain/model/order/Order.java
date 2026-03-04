@@ -74,6 +74,10 @@ public class Order extends Aggregate<UUID> {
         }
     }
 
+    public boolean isNotCreated() {
+        return this.status != OrderStatus.CREATED;
+    }
+
     public static class Errors {
         public static Error orderIsNotAssigned() {
             return Error.of("order.is.not.assigned",

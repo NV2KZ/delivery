@@ -77,6 +77,27 @@ class CourierTest {
     }
 
     @Test
+    void shouldReturnTrueWhenCourierHasNoActiveOrders() {
+        // Arrange
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
+
+        // Act & Assert
+        assertThat(courier.hasNoActiveOrders()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenCourierHasActiveOrder() {
+        // Arrange
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));
+        UUID orderId = UUID.randomUUID();
+        Volume orderVolume = Volume.mustCreate(5);
+        courier.takeOrder(orderId, orderVolume);
+
+        // Act & Assert
+        assertThat(courier.hasNoActiveOrders()).isFalse();
+    }
+
+    @Test
     void shouldAddStoragePlaceSuccessfully() {
         // Arrange
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(5, 5));

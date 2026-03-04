@@ -54,6 +54,47 @@ class OrderTest {
     }
 
     @Test
+    void shouldReturnTrueWhenOrderIsNotCreated() {
+        // Arrange
+        UUID basketId = UUID.randomUUID();
+        Location location = Location.mustCreate(5, 5);
+        Volume volume = Volume.mustCreate(10);
+        var order = Order.mustCreate(basketId, location, volume);
+
+        // Заказ только что создан - статус CREATED
+        // Act & Assert
+        assertThat(order.isNotCreated()).isFalse();
+    }
+
+    @Test
+    void shouldReturnFalseWhenOrderIsAssigned() {
+        // Arrange
+        UUID basketId = UUID.randomUUID();
+        Location location = Location.mustCreate(5, 5);
+        Volume volume = Volume.mustCreate(10);
+        var order = Order.mustCreate(basketId, location, volume);
+        order.assign(UUID.randomUUID());
+
+        // Act & Assert
+        assertThat(order.isNotCreated()).isTrue();
+    }
+
+    @Test
+    void shouldReturnFalseWhenOrderIsCompleted() {
+        // Arrange
+        UUID basketId = UUID.randomUUID();
+        Location location = Location.mustCreate(5, 5);
+        Volume volume = Volume.mustCreate(10);
+        var order = Order.mustCreate(basketId, location, volume);
+        UUID courierId = UUID.randomUUID();
+        order.assign(courierId);
+        order.complete();
+
+        // Act & Assert
+        assertThat(order.isNotCreated()).isTrue();
+    }
+
+    @Test
     void shouldAssignCourierToOrder() {
         // Arrange
         UUID basketId = UUID.randomUUID();
