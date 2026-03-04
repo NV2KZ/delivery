@@ -20,7 +20,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "order")
+@Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order extends Aggregate<UUID> {

@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.courier;
+package microarch.delivery.core.domain.model.kernel;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

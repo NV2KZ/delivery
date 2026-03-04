@@ -17,6 +17,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Speed;
 import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.ArrayList;

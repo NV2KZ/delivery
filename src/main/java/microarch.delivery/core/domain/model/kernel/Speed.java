@@ -1,4 +1,4 @@
-package microarch.delivery.core.domain.model.courier;
+package microarch.delivery.core.domain.model.kernel;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

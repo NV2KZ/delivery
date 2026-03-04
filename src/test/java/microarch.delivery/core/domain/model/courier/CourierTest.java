@@ -1,6 +1,7 @@
 package microarch.delivery.core.domain.model.courier;
 
 import microarch.delivery.core.domain.model.kernel.Location;
+import microarch.delivery.core.domain.model.kernel.Speed;
 import microarch.delivery.core.domain.model.kernel.Volume;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

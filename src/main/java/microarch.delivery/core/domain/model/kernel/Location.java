@@ -20,15 +20,20 @@ import java.util.Objects;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class Location extends ValueObject<Location> {
 
-    @Column(name = "x_coordinate")
+    private static final int MIN_X = 1;
+    private static final int MIN_Y = 1;
+    private static final int MAX_X = 10;
+    private static final int MAX_Y = 10;
+
+    @Column(name = "location_x")
     private final int x;
 
-    @Column(name = "y_coordinate")
+    @Column(name = "location_y")
     private final int y;
 
     public static Result<Location, Error> create(int x, int y) {
-        if (x < 1 || x > 10) return Result.failure(GeneralErrors.valueIsOutOfRange("x", x, 1, 10));
-        if (y < 1 || y > 10) return Result.failure(GeneralErrors.valueIsOutOfRange("y", y, 1, 10));
+        if (x < 1 || x > 10) return Result.failure(GeneralErrors.valueIsOutOfRange("x", x, MIN_X, MAX_X));
+        if (y < 1 || y > 10) return Result.failure(GeneralErrors.valueIsOutOfRange("y", y, MIN_Y, MAX_Y));
 
         return Result.success(new Location(x, y));
     }
