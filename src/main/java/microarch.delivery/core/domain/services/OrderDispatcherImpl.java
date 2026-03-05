@@ -29,6 +29,7 @@ public class OrderDispatcherImpl implements OrderDispatcher {
                 .map(courier -> {
                     var result = courier.takeOrder(order.getId(), order.getVolume());
                     if (result.isSuccess()) {
+                        order.assign(courier.getId());
                         return Result.success(courier);
                     } else {
                         return Result.<Courier, Error>failure(result.getError());

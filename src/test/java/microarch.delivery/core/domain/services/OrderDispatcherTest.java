@@ -5,6 +5,7 @@ import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Speed;
 import microarch.delivery.core.domain.model.kernel.Volume;
 import microarch.delivery.core.domain.model.order.Order;
+import microarch.delivery.core.domain.model.order.OrderStatus;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,6 +35,8 @@ class OrderDispatcherTest {
         assertThat(result.getValue().getName()).isEqualTo("Быстрый");
         assertThat(fastCourier.hasNoActiveOrders()).isFalse();
         assertThat(slowCourier.hasNoActiveOrders()).isTrue();
+        assertThat(order.getCourierId()).isEqualTo(fastCourier.getId());
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.ASSIGNED);
     }
 
     @Test
@@ -48,5 +51,7 @@ class OrderDispatcherTest {
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(courier.hasNoActiveOrders()).isTrue();
+        assertThat(order.getCourierId()).isNull();
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
     }
 }
