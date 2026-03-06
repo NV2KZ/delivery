@@ -155,7 +155,11 @@ public class Courier extends Aggregate<UUID> {
         return UnitResult.success();
     }
 
-    public static class Errors {
+    public boolean hasNoActiveOrders() {
+        return storagePlaces.stream().allMatch(StoragePlace::isEmpty);
+    }
+
+    private static class Errors {
         public static Error orderIsNotFoundInStoragePlaces(UUID orderId) {
             return Error.of("courier.cannot.complete.order",
                     String.format("Заказ %s не найден ни в одном месте хранения", orderId));
