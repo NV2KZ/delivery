@@ -18,7 +18,7 @@ public class GetAllCouriersQueryHandlerImpl implements GetAllCouriersQueryHandle
 
     @Override
     @Transactional
-    public Result<GetAllCouriersResponse, Error> handle(GetAllCouriersQuery query) {
+    public Result<GetAllCouriersResponse, Error> handle() {
         String jpql = """
                 SELECT NEW microarch.delivery.core.application.queries.dto.CourierDto(
                     c.id, c.name, c.location

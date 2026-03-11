@@ -30,8 +30,6 @@ class GetAllCouriersQueryHandlerIntegrationTest extends PostgresIntegrationTestB
     @Autowired
     private CourierJpaRepository jpaRepository;
 
-    private final GetAllCouriersQuery query = new GetAllCouriersQuery();
-
     @BeforeEach
     void setUp() {
         jpaRepository.deleteAll();
@@ -56,7 +54,7 @@ class GetAllCouriersQueryHandlerIntegrationTest extends PostgresIntegrationTestB
         courierRepository.save(courier2);
 
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -80,7 +78,7 @@ class GetAllCouriersQueryHandlerIntegrationTest extends PostgresIntegrationTestB
     @Test
     void shouldReturnEmptyListWhenNoCouriers() {
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
