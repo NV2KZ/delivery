@@ -19,7 +19,7 @@ public class AssignOrderCommandHandlerImpl implements AssignOrderCommandHandler 
 
     @Override
     @Transactional
-    public UnitResult<Error> handle(AssignOrderCommand command) {
+    public UnitResult<Error> handle() {
         var orderOpt = orderRepository.findAnyCreated();
         if (orderOpt.isEmpty())
             // Если новых заказов нет, завершаем

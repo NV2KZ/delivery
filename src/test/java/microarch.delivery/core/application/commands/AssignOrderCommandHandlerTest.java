@@ -30,7 +30,6 @@ class AssignOrderCommandHandlerTest {
     @Test
     void handleShouldBeSuccessWhenOrderAssignedToCourier() {
         // Arrange
-        var command = AssignOrderCommand.create().getValue();
         var order = createOrder();
         var courier = createCourier();
 
@@ -43,7 +42,7 @@ class AssignOrderCommandHandlerTest {
         var handler = new AssignOrderCommandHandlerImpl(orderRepository, courierRepository, orderDispatcher);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -56,14 +55,13 @@ class AssignOrderCommandHandlerTest {
     @Test
     void handleShouldBeSuccessWhenNoCreatedOrders() {
         // Arrange
-        var command = AssignOrderCommand.create().getValue();
 
         when(orderRepository.findAnyCreated()).thenReturn(Optional.empty());
 
         var handler = new AssignOrderCommandHandlerImpl(orderRepository, courierRepository, orderDispatcher);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -75,7 +73,6 @@ class AssignOrderCommandHandlerTest {
     @Test
     void handleShouldReturnFailureWhenNoAvailableCouriers() {
         // Arrange
-        var command = AssignOrderCommand.create().getValue();
         var order = createOrder();
 
         when(orderRepository.findAnyCreated()).thenReturn(Optional.of(order));
@@ -89,7 +86,7 @@ class AssignOrderCommandHandlerTest {
         var handler = new AssignOrderCommandHandlerImpl(orderRepository, courierRepository, orderDispatcher);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isFalse();

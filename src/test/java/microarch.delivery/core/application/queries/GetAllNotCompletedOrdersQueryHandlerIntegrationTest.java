@@ -30,8 +30,6 @@ class GetAllNotCompletedOrdersQueryHandlerIntegrationTest extends PostgresIntegr
     @Autowired
     private OrderJpaRepository jpaRepository;
 
-    private final GetAllNotCompletedOrdersQuery query = new GetAllNotCompletedOrdersQuery();
-
     @BeforeEach
     void setUp() {
         jpaRepository.deleteAll();
@@ -66,7 +64,7 @@ class GetAllNotCompletedOrdersQueryHandlerIntegrationTest extends PostgresIntegr
         orderRepository.save(completedOrder);
 
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -99,7 +97,7 @@ class GetAllNotCompletedOrdersQueryHandlerIntegrationTest extends PostgresIntegr
         orderRepository.save(completedOrder);
 
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -110,7 +108,7 @@ class GetAllNotCompletedOrdersQueryHandlerIntegrationTest extends PostgresIntegr
     @Test
     void shouldReturnEmptyListWhenNoOrders() {
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -129,7 +127,7 @@ class GetAllNotCompletedOrdersQueryHandlerIntegrationTest extends PostgresIntegr
         orderRepository.save(order);
 
         // Act
-        var result = handler.handle(query);
+        var result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();

@@ -21,7 +21,7 @@ public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler 
 
     @Override
     @Transactional
-    public UnitResult<Error> handle(MoveCourierCommand command) {
+    public UnitResult<Error> handle() {
         var assignedOrders = orderRepository.findAllAssigned();
 
         if (assignedOrders.isEmpty()) {

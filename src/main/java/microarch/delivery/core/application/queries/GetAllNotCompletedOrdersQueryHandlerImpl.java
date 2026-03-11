@@ -19,7 +19,7 @@ public class GetAllNotCompletedOrdersQueryHandlerImpl implements GetAllNotComple
 
     @Override
     @Transactional
-    public Result<GetAllNotCompletedOrdersResponse, Error> handle(GetAllNotCompletedOrdersQuery query) {
+    public Result<GetAllNotCompletedOrdersResponse, Error> handle() {
         String jpql = """
                 SELECT NEW microarch.delivery.core.application.queries.dto.OrderDto(
                     o.id, o.location

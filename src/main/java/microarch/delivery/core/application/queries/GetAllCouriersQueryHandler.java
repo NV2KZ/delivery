@@ -4,5 +4,5 @@ import libs.errs.Error;
 import libs.errs.Result;
 
 public interface GetAllCouriersQueryHandler {
-    Result<GetAllCouriersResponse, Error> handle(GetAllCouriersQuery query);
+    Result<GetAllCouriersResponse, Error> handle();
 }

@@ -4,5 +4,5 @@ import libs.errs.Error;
 import libs.errs.Result;
 
 public interface GetAllNotCompletedOrdersQueryHandler {
-    Result<GetAllNotCompletedOrdersResponse, Error> handle(GetAllNotCompletedOrdersQuery query);
+    Result<GetAllNotCompletedOrdersResponse, Error> handle();
 }
