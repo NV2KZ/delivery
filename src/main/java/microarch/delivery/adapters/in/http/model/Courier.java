@@ -17,7 +17,7 @@ import jakarta.annotation.Generated;
  * Courier
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-11T00:26:20.398575+03:00[Europe/Moscow]", comments = "Generator version: 7.20.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-03-11T16:47:50.448162+03:00[Europe/Moscow]", comments = "Generator version: 7.20.0")
 public class Courier {
 
   private UUID id;

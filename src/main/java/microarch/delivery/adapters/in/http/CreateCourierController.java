@@ -1,7 +1,7 @@
 package microarch.delivery.adapters.in.http;
 
 import lombok.RequiredArgsConstructor;
-import microarch.delivery.adapters.in.http.api.DeliveryApi;
+import microarch.delivery.adapters.in.http.api.CreateCourierApi;
 import microarch.delivery.adapters.in.http.model.CreateCourierResponse;
 import microarch.delivery.adapters.in.http.model.NewCourier;
 import microarch.delivery.core.application.commands.CreateCourierCommand;
@@ -14,7 +14,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 @RestController
 @RequiredArgsConstructor
-public class CreateCourierController implements DeliveryApi {
+public class CreateCourierController implements CreateCourierApi {
 
     private final CreateCourierCommandHandler createCourierCommandHandler;
 

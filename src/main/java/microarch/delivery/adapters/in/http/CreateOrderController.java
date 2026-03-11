@@ -1,7 +1,7 @@
 package microarch.delivery.adapters.in.http;
 
 import lombok.RequiredArgsConstructor;
-import microarch.delivery.adapters.in.http.api.DeliveryApi;
+import microarch.delivery.adapters.in.http.api.CreateOrderApi;
 import microarch.delivery.adapters.in.http.model.CreateOrderResponse;
 import microarch.delivery.core.application.commands.CreateOrderCommand;
 import microarch.delivery.core.application.commands.CreateOrderCommandHandler;
@@ -15,7 +15,7 @@ import java.util.UUID;
 // но пока этот функционал у нас не реализован
 @RestController
 @RequiredArgsConstructor
-public class CreateOrderController implements DeliveryApi {
+public class CreateOrderController implements CreateOrderApi {
 
     private final CreateOrderCommandHandler createOrderCommandHandler;
 

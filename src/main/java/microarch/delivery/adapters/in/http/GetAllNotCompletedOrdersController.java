@@ -1,7 +1,7 @@
 package microarch.delivery.adapters.in.http;
 
 import lombok.RequiredArgsConstructor;
-import microarch.delivery.adapters.in.http.api.DeliveryApi;
+import microarch.delivery.adapters.in.http.api.GetOrdersApi;
 import microarch.delivery.adapters.in.http.mapper.OrderMapper;
 import microarch.delivery.adapters.in.http.model.Order;
 import microarch.delivery.core.application.queries.GetAllNotCompletedOrdersQueryHandler;
@@ -13,8 +13,10 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllNotCompletedOrdersController implements DeliveryApi {
+public class GetAllNotCompletedOrdersController implements GetOrdersApi {
+
     private final GetAllNotCompletedOrdersQueryHandler getAllNotCompletedOrdersQueryHandler;
+
     @Override
     public ResponseEntity<List<Order>> getOrders() {
 

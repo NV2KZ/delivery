@@ -27,14 +27,14 @@ DELETE FROM public.outbox;
 # Генерация HTTP сервера
 ```
 openapi-generator generate \
-  -i <file path or url> \
-  -g spring \
-  -o src/main/java/microarch/delivery/adapters/in/http/openapi \
-  --global-property apis \
-  --global-property models \
-  --package-name microarch.delivery.adapters.in.http.openapi \
-  --skip-validate-spec \
-  --additional-properties=useJakartaEe=true,modelPackage=model,apiPackage=api,delegatePattern=false
+        -i <file path or url> \
+        -g spring \
+        -o src/main/java \
+        --global-property apis,models \
+        --package-name microarch.delivery.adapters.in.http \
+        --skip-validate-spec \
+        --additional-properties=interfaceOnly=true,useTags=true,skipDefaultInterface=false,useJakartaEe=true,useSpringBoot3=true,sourceFolder=src/main/java,modelPackage=microarch.delivery.adapters.in.http.openapi.model,apiPackage=microarch.delivery.adapters.in.http.openapi.api
+
 ```
 
 # Генерация gRPC клиента из Protobuf

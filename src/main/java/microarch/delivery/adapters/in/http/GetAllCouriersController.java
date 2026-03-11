@@ -1,7 +1,7 @@
 package microarch.delivery.adapters.in.http;
 
 import lombok.RequiredArgsConstructor;
-import microarch.delivery.adapters.in.http.api.DeliveryApi;
+import microarch.delivery.adapters.in.http.api.GetCouriersApi;
 import microarch.delivery.adapters.in.http.mapper.CourierMapper;
 import microarch.delivery.adapters.in.http.model.Courier;
 import microarch.delivery.core.application.queries.GetAllCouriersQueryHandler;
@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-public class GetAllCouriersController implements DeliveryApi {
+public class GetAllCouriersController implements GetCouriersApi {
 
     private final GetAllCouriersQueryHandler getAllCouriersQueryHandler;
 
