@@ -1,4 +1,4 @@
-package config;
+package microarch.delivery.config;
 
 import microarch.delivery.core.application.jobs.AssignOrdersJob;
 import microarch.delivery.core.application.jobs.MoveCouriersJob;
