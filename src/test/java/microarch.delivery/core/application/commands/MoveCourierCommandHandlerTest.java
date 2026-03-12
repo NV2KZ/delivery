@@ -26,7 +26,6 @@ class MoveCourierCommandHandlerTest {
     @Test
     void handleShouldMoveAndSaveCouriersWhenAssignedOrdersExist() {
         // Arrange
-        var command = MoveCourierCommand.create().getValue();
 
         var courier1 = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
         var courier2 = Courier.mustCreate("Петр", Speed.mustCreate(2), Location.mustCreate(2, 2));
@@ -49,7 +48,7 @@ class MoveCourierCommandHandlerTest {
         var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -60,7 +59,6 @@ class MoveCourierCommandHandlerTest {
     @Test
     void handleShouldCompleteOrdersAndSaveBothWhenCourierInTargetLocation() {
         // Arrange
-        var command = MoveCourierCommand.create().getValue();
 
         var targetLocation = Location.mustCreate(5, 5);
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), targetLocation);
@@ -77,7 +75,7 @@ class MoveCourierCommandHandlerTest {
         var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -88,7 +86,6 @@ class MoveCourierCommandHandlerTest {
     @Test
     void handleShouldNotSaveWhenMoveFails() {
         // Arrange
-        var command = MoveCourierCommand.create().getValue();
 
         var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
         var order = Order.mustCreate(UUID.randomUUID(), Location.mustCreate(5, 5), Volume.mustCreate(10));
@@ -106,7 +103,7 @@ class MoveCourierCommandHandlerTest {
         var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
@@ -118,14 +115,13 @@ class MoveCourierCommandHandlerTest {
     @Test
     void handleShouldReturnSuccessWhenNoAssignedOrders() {
         // Arrange
-        var command = MoveCourierCommand.create().getValue();
 
         when(orderRepository.findAllAssigned()).thenReturn(List.of());
 
         var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
@@ -137,7 +133,6 @@ class MoveCourierCommandHandlerTest {
     @Test
     void handleShouldCollectErrorsWhenCourierNotFound() {
         // Arrange
-        var command = MoveCourierCommand.create().getValue();
 
         var courierId = UUID.randomUUID();
         var order = Order.mustCreate(UUID.randomUUID(), Location.mustCreate(5, 5), Volume.mustCreate(10));
@@ -149,7 +144,7 @@ class MoveCourierCommandHandlerTest {
         var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
 
         // Act
-        UnitResult<Error> result = handler.handle(command);
+        UnitResult<Error> result = handler.handle();
 
         // Assert
         assertThat(result.isSuccess()).isFalse();
