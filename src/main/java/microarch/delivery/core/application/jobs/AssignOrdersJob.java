@@ -2,7 +2,6 @@ package microarch.delivery.core.application.jobs;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import microarch.delivery.core.application.commands.AssignOrderCommand;
 import microarch.delivery.core.application.commands.AssignOrderCommandHandler;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -17,7 +16,7 @@ public class AssignOrdersJob implements Job {
     @Override
     public void execute(JobExecutionContext context) {
         log.info("Start assign orders");
-        handler.handle(AssignOrderCommand.create().getValue());
+        handler.handle();
         log.info("Stop assign orders");
     }
 }
