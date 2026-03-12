@@ -1,11 +1,12 @@
 package microarch.delivery.core.application.commands;
 
 import libs.errs.Error;
-import libs.errs.Guard;
+import libs.errs.GeneralErrors;
 import libs.errs.Result;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import microarch.delivery.core.domain.model.kernel.Address;
 import microarch.delivery.core.domain.model.kernel.Volume;
 
 import java.util.UUID;
@@ -15,15 +16,7 @@ import java.util.UUID;
 public final class CreateOrderCommand {
     private final UUID orderId;
 
-    private final String country;
-
-    private final String city;
-
-    private final String street;
-
-    private final String house;
-
-    private final String apartment;
+    private final Address address;
 
     private final Volume volume;
 
@@ -36,15 +29,12 @@ public final class CreateOrderCommand {
             String apartment,
             int volume
     ) {
-        var err = Guard.combine(
-                Guard.againstNullOrEmpty(orderId, "orderId"),
-                Guard.againstNullOrEmpty(country, "country"),
-                Guard.againstNullOrEmpty(city, "city"),
-                Guard.againstNullOrEmpty(street, "street"),
-                Guard.againstNullOrEmpty(house, "house"),
-                Guard.againstNullOrEmpty(apartment, "apartment"));
-        if (err != null)
-            return Result.failure(err);
+        if (orderId == null)
+            return Result.failure(GeneralErrors.valueIsRequired("name"));
+
+        var addresResult = Address.create(country, city, street, house, apartment);
+        if (addresResult.isFailure())
+            return Result.failure(addresResult.getError());
 
         var volumeResult = Volume.create(volume);
         if (volumeResult.isFailure())
@@ -53,11 +43,7 @@ public final class CreateOrderCommand {
         return Result.success(
                 new CreateOrderCommand(
                         orderId,
-                        country,
-                        city,
-                        street,
-                        house,
-                        apartment,
+                        addresResult.getValue(),
                         volumeResult.getValue()
                 )
         );
