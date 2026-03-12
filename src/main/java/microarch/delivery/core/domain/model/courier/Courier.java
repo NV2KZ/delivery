@@ -155,6 +155,11 @@ public class Courier extends Aggregate<UUID> {
         return UnitResult.success();
     }
 
+    public boolean isInTargetLocation(Location target) {
+        Objects.requireNonNull(target);
+        return location.equals(target);
+    }
+
     public boolean hasNoActiveOrders() {
         return storagePlaces.stream().allMatch(StoragePlace::isEmpty);
     }

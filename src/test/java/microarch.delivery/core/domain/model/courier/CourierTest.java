@@ -35,7 +35,7 @@ class CourierTest {
 
         // Проверяем, что создалась сумка по умолчанию
         assertThat(courier.getStoragePlaces()).hasSize(1);
-        var defaultBag = courier.getStoragePlaces().get(0);
+        var defaultBag = courier.getStoragePlaces().getFirst();
         assertThat(defaultBag.getName()).isEqualTo("Сумка");
         assertThat(defaultBag.getTotalVolume().getValue()).isEqualTo(10);
         assertThat(defaultBag.isEmpty()).isTrue();
@@ -75,6 +75,44 @@ class CourierTest {
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError()).isNotNull();
     }
+
+    @Test
+    void shouldReturnTrueWhenCourierLocationEqualsTarget() {
+        // Arrange
+        var location = Location.mustCreate(5, 5);
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), location);
+        var target = Location.mustCreate(5, 5);
+
+        // Act
+        boolean result = courier.isInTargetLocation(target);
+
+        // Assert
+        assertThat(result).isTrue();
+    }
+
+    @Test
+    void shouldThrowException_WhenTargetIsNull() {
+        // Arrange
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(1, 1));
+
+        // Act & Assert
+        assertThatThrownBy(() -> courier.isInTargetLocation(null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    void shouldReturnFalseWhenCourierLocationDiffersFromTarget() {
+        // Arrange
+        var courier = Courier.mustCreate("Иван", Speed.mustCreate(2), Location.mustCreate(3, 4));
+        var target = Location.mustCreate(5, 5);
+
+        // Act
+        boolean result = courier.isInTargetLocation(target);
+
+        // Assert
+        assertThat(result).isFalse();
+    }
+
 
     @Test
     void shouldReturnTrueWhenCourierHasNoActiveOrders() {
@@ -162,7 +200,7 @@ class CourierTest {
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
-        var bag = courier.getStoragePlaces().get(0);
+        var bag = courier.getStoragePlaces().getFirst();
         assertThat(bag.isEmpty()).isFalse();
         assertThat(bag.getOrderId()).isEqualTo(orderId);
     }
@@ -179,7 +217,7 @@ class CourierTest {
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError().getCode()).isEqualTo("courier.cannot.take.order");
-        assertThat(courier.getStoragePlaces().get(0).isEmpty()).isTrue(); // место свободно
+        assertThat(courier.getStoragePlaces().getFirst().isEmpty()).isTrue(); // место свободно
     }
 
     @Test
@@ -205,7 +243,7 @@ class CourierTest {
 
         // Assert
         assertThat(result.isSuccess()).isTrue();
-        var bag = courier.getStoragePlaces().get(0);
+        var bag = courier.getStoragePlaces().getFirst();
         assertThat(bag.isEmpty()).isTrue();
         assertThat(bag.getOrderId()).isNull();
     }
@@ -224,7 +262,7 @@ class CourierTest {
         // Assert
         assertThat(result.isSuccess()).isFalse();
         assertThat(result.getError().getCode()).isEqualTo("courier.cannot.complete.order");
-        assertThat(courier.getStoragePlaces().get(0).isEmpty()).isFalse(); // заказ все еще там
+        assertThat(courier.getStoragePlaces().getFirst().isEmpty()).isFalse(); // заказ все еще там
     }
 
     @Test
