@@ -16,8 +16,6 @@ public class MoveCouriersJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        log.info("Start move");
         handler.handle();
-        log.info("Stop move");
     }
 }
