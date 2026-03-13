@@ -5,6 +5,7 @@ import libs.errs.Result;
 import microarch.delivery.core.domain.model.kernel.Location;
 import microarch.delivery.core.domain.model.kernel.Volume;
 import microarch.delivery.core.domain.model.order.Order;
+import microarch.delivery.core.ports.GeoClient;
 import microarch.delivery.core.ports.OrderRepository;
 import org.junit.jupiter.api.Test;
 
@@ -21,6 +22,7 @@ import static org.mockito.Mockito.when;
 class CreateOrderCommandHandlerTest {
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
+    private final GeoClient geoClient = mock(GeoClient.class);
 
     @Test
     void handleShouldCreateNewOrderWhenOrderDoesNotExist() {
@@ -39,8 +41,9 @@ class CreateOrderCommandHandlerTest {
         var command = commandResult.getValue();
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+        when(geoClient.getLocation(command.getAddress())).thenReturn(Location.mustCreate(1,2));
 
-        var handler = new CreateOrderCommandHandlerImpl(orderRepository);
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient);
 
         // Act
         Result<UUID, Error> result = handler.handle(command);
@@ -49,6 +52,7 @@ class CreateOrderCommandHandlerTest {
         assertThat(result.isSuccess()).isTrue();
         assertThat(result.getValue()).isEqualTo(orderId);
 
+        verify(geoClient).getLocation(command.getAddress());
         verify(orderRepository).save(any());
     }
 
@@ -71,7 +75,7 @@ class CreateOrderCommandHandlerTest {
         var existingOrder = Order.mustCreate(orderId, Location.mustCreate(3, 4), Volume.mustCreate(5));
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
 
-        var handler = new CreateOrderCommandHandlerImpl(orderRepository);
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient);
 
         // Act
         Result<UUID, Error> result = handler.handle(command);
