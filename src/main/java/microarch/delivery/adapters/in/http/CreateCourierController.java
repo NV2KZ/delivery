@@ -36,7 +36,7 @@ public class CreateCourierController implements CreateCourierApi {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //TODO так как контракт не позволяет передать скорость генерируем рандомно, уточнить
+    //Так как контракт не позволяет передать скорость генерируем рандомно
     private int randomSpeed() {
         return ThreadLocalRandom.current().nextInt(1, 5);
     }
