@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.UnitResult;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,6 +19,7 @@ public class CompleteOrderCommandHandlerImpl implements CompleteOrderCommandHand
 
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     @Override
     @Transactional
@@ -53,6 +56,7 @@ public class CompleteOrderCommandHandlerImpl implements CompleteOrderCommandHand
             }
             orderRepository.save(order);
             courierRepository.save(courier);
+            domainEventPublisher.publish(List.of(order));
             return UnitResult.success();
         } else {
             return UnitResult.failure(Errors.courierNotInTargetLocation(courier.getId()));

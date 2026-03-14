@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.Result;
 import microarch.delivery.core.domain.model.kernel.Location;
@@ -23,6 +24,7 @@ class CreateOrderCommandHandlerTest {
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final GeoClient geoClient = mock(GeoClient.class);
+    private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
 
     @Test
     void handleShouldCreateNewOrderWhenOrderDoesNotExist() {
@@ -43,7 +45,7 @@ class CreateOrderCommandHandlerTest {
         when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
         when(geoClient.getLocation(command.getAddress())).thenReturn(Location.mustCreate(1,2));
 
-        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient);
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient, domainEventPublisher);
 
         // Act
         Result<UUID, Error> result = handler.handle(command);
@@ -54,6 +56,7 @@ class CreateOrderCommandHandlerTest {
 
         verify(geoClient).getLocation(command.getAddress());
         verify(orderRepository).save(any());
+        verify(domainEventPublisher).publish(any());
     }
 
     @Test
@@ -75,7 +78,7 @@ class CreateOrderCommandHandlerTest {
         var existingOrder = Order.mustCreate(orderId, Location.mustCreate(3, 4), Volume.mustCreate(5));
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
 
-        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient);
+        var handler = new CreateOrderCommandHandlerImpl(orderRepository, geoClient, domainEventPublisher);
 
         // Act
         Result<UUID, Error> result = handler.handle(command);
@@ -85,6 +88,7 @@ class CreateOrderCommandHandlerTest {
         assertThat(result.getValue()).isEqualTo(orderId);
 
         verify(orderRepository, never()).save(any());
+        verify(domainEventPublisher, never()).publish(any());
     }
 
     @Test

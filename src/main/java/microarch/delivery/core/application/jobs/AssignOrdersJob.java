@@ -15,8 +15,6 @@ public class AssignOrdersJob implements Job {
 
     @Override
     public void execute(JobExecutionContext context) {
-        log.info("Start assign orders");
         handler.handle();
-        log.info("Stop assign orders");
     }
 }

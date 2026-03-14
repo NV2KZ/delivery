@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.UnitResult;
 import microarch.delivery.core.domain.model.courier.Courier;
@@ -21,8 +22,9 @@ class CompleteOrderCommandHandlerTest {
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final CourierRepository courierRepository = mock(CourierRepository.class);
+    private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
     private final CompleteOrderCommandHandler handler =
-            new CompleteOrderCommandHandlerImpl(orderRepository, courierRepository);
+            new CompleteOrderCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
     @Test
     void handle_ShouldCompleteOrder_WhenCourierAtTargetLocation() {
@@ -49,6 +51,7 @@ class CompleteOrderCommandHandlerTest {
         assertThat(result.isSuccess()).isTrue();
         verify(orderRepository).save(order);
         verify(courierRepository).save(courier);
+        verify(domainEventPublisher).publish(any());
     }
 
     @Test
@@ -68,6 +71,7 @@ class CompleteOrderCommandHandlerTest {
         assertThat(result.getError().getCode()).isEqualTo("order.not.found");
         verify(orderRepository, never()).save(any());
         verify(courierRepository, never()).save(any());
+        verify(domainEventPublisher, never()).publish(any());
     }
 
     @Test
@@ -91,5 +95,6 @@ class CompleteOrderCommandHandlerTest {
         assertThat(result.getError().getCode()).isEqualTo("order.not.correspond.to.courier");
         verify(orderRepository, never()).save(any());
         verify(courierRepository, never()).save(any());
+        verify(domainEventPublisher, never()).publish(any());
     }
 }

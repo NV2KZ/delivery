@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.UnitResult;
 import microarch.delivery.core.domain.model.courier.Courier;
@@ -22,6 +23,7 @@ class MoveCourierCommandHandlerTest {
 
     private final OrderRepository orderRepository = mock(OrderRepository.class);
     private final CourierRepository courierRepository = mock(CourierRepository.class);
+    private final DomainEventPublisher domainEventPublisher = mock(DomainEventPublisher.class);
 
     @Test
     void handleShouldMoveAndSaveCouriersWhenAssignedOrdersExist() {
@@ -45,7 +47,7 @@ class MoveCourierCommandHandlerTest {
         when(courierRepository.findById(courier1.getId())).thenReturn(Optional.of(courier1));
         when(courierRepository.findById(courier2.getId())).thenReturn(Optional.of(courier2));
 
-        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
+        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
         // Act
         UnitResult<Error> result = handler.handle();
@@ -72,7 +74,7 @@ class MoveCourierCommandHandlerTest {
         when(orderRepository.findAllAssigned()).thenReturn(List.of(order));
         when(courierRepository.findById(courier.getId())).thenReturn(Optional.of(courier));
 
-        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
+        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
         // Act
         UnitResult<Error> result = handler.handle();
@@ -81,6 +83,7 @@ class MoveCourierCommandHandlerTest {
         assertThat(result.isSuccess()).isTrue();
         verify(orderRepository).save(order);
         verify(courierRepository).save(courier);
+        verify(domainEventPublisher).publish(any());
     }
 
     @Test
@@ -100,7 +103,7 @@ class MoveCourierCommandHandlerTest {
         when(orderRepository.findAllAssigned()).thenReturn(List.of(order));
         when(courierRepository.findById(courier.getId())).thenReturn(Optional.of(courierSpy));
 
-        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
+        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
         // Act
         UnitResult<Error> result = handler.handle();
@@ -118,7 +121,7 @@ class MoveCourierCommandHandlerTest {
 
         when(orderRepository.findAllAssigned()).thenReturn(List.of());
 
-        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
+        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
         // Act
         UnitResult<Error> result = handler.handle();
@@ -141,7 +144,7 @@ class MoveCourierCommandHandlerTest {
         when(orderRepository.findAllAssigned()).thenReturn(List.of(order));
         when(courierRepository.findById(courierId)).thenReturn(Optional.empty());
 
-        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository);
+        var handler = new MoveCourierCommandHandlerImpl(orderRepository, courierRepository, domainEventPublisher);
 
         // Act
         UnitResult<Error> result = handler.handle();
