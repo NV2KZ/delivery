@@ -3,8 +3,6 @@ package microarch.delivery.adapters.in.kafka;
 import lombok.RequiredArgsConstructor;
 import microarch.delivery.core.application.commands.CreateOrderCommand;
 import microarch.delivery.core.application.commands.CreateOrderCommandHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 import queues.basket.BasketEventsProto;
@@ -15,7 +13,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BasketEventsConsumer {
 
-    private static final Logger log = LoggerFactory.getLogger(BasketEventsConsumer.class);
     private final CreateOrderCommandHandler createOrderCommandHandler;
 
     @KafkaListener(topics = "${app.kafka.baskets-events-topic}")

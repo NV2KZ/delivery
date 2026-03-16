@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.Result;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import microarch.delivery.core.ports.OrderRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -18,6 +20,8 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
     private final OrderRepository orderRepository;
 
     private final GeoClient geoClient;
+
+    private final DomainEventPublisher domainEventPublisher;
 
     @Override
     @Transactional
@@ -31,6 +35,7 @@ public class CreateOrderCommandHandlerImpl implements CreateOrderCommandHandler 
             var order = orderCreateResult.getValue();
 
             orderRepository.save(order);
+            domainEventPublisher.publish(List.of(order));
 
             return Result.success(order.getId());
         }

@@ -1,5 +1,6 @@
 package microarch.delivery.core.application.commands;
 
+import libs.ddd.DomainEventPublisher;
 import libs.errs.Error;
 import libs.errs.UnitResult;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler 
 
     private final OrderRepository orderRepository;
     private final CourierRepository courierRepository;
+    private final DomainEventPublisher domainEventPublisher;
 
     @Override
     @Transactional
@@ -53,6 +55,7 @@ public class MoveCourierCommandHandlerImpl implements MoveCourierCommandHandler 
                 }
                 orderRepository.save(order);
                 courierRepository.save(courier);
+                domainEventPublisher.publish(List.of(order));
                 continue;
             }
 
