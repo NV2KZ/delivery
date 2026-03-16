@@ -10,28 +10,11 @@ option go_package = "queues/basketpb";
 import "google/protobuf/timestamp.proto";
 
 message BasketConfirmedIntegrationEvent {
-  // Metadata
-  string event_id = 1;
-  string event_type = 2;
-  google.protobuf.Timestamp occurred_at = 3;
-
-  // Payload
-  string basket_id = 4;
-  Address address = 5;
-  repeated Item items = 6;
-  DeliveryPeriod delivery_period = 7;
-  int32 volume = 8;
-}
-
-message BasketCancelledIntegrationEvent {
-  // Metadata
-  string event_id = 1;
-  string event_type = 2;
-  google.protobuf.Timestamp occurred_at = 3;
-
-  // Payload
-  string basket_id = 4;
-  string reason = 5;
+  string basket_id = 1;
+  Address address = 2;
+  repeated Item items = 3;
+  DeliveryPeriod delivery_period = 4;
+  int32 volume = 5;
 }
 
 message Address {
