@@ -1,0 +1,14 @@
+package microarch.delivery.adapters.out.postgres.outbox;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+import java.util.UUID;
+
+public interface OutboxJpaRepository extends JpaRepository<OutboxMessage, UUID> {
+
+    // Ищем все сообщения, у которых processedOnUtc == null
+    @Query(value = "SELECT id, event_type, aggregate_id, aggregate_type, payload, occurred_on_utc, processed_on_utc FROM outbox WHERE processed_on_utc IS NULL", nativeQuery = true)
+    List<OutboxMessage> findUnprocessedMessages();
+}
